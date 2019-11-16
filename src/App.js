@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import TopNav from "./components/layout/TopNav";
+import { Container, Row, Col } from "reactstrap";
+import Dashboard from "./components/dashboard/Dashboard";
+import { connect } from "react-redux";
+import { fetchAllCars } from "./store/car/actions";
+import { fetchAllLocations } from "./store/location/actions";
+import NewCarForm from "./components/dashboard/NewCarFrom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  componentDidMount() {
+    this.props.dispatch(fetchAllCars());
+    this.props.dispatch(fetchAllLocations());
+  }
+  render() {
+    return (
+      <Router>
+        <div className="App">
+          <TopNav />
+          <Container>
+            <Row>
+              <Col>
+                <Switch>
+                  <Route exact path="/" component={Dashboard} />
+                  <Route path="/newcar" component={NewCarForm} />
+                </Switch>
+              </Col>
+            </Row>
+          </Container>
+        </div>
+      </Router>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    cars: state.cars
+  };
+};
+
+export default connect(mapStateToProps)(App);
